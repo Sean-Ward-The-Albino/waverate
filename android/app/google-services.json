@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "517556513553",
+    "project_id": "waverate",
+    "storage_bucket": "waverate.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:517556513553:android:9817b74a83be8ee2b07ab0",
+        "android_client_info": {
+          "package_name": "com.sward.waverate"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAQ7RN9CPJwzTBpXmlJ0-uCA4TI18bd5VM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
