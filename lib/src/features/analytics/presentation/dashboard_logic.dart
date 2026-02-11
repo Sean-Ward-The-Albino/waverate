@@ -40,8 +40,9 @@ class TopSong {
   TopSong(this.song, this.rating);
 }
 
-final dashboardProvider = FutureProvider<DashboardData>((ref) async {
-  final userRatings = await ref.watch(userRatingsProvider.future);
+final dashboardProvider =
+    FutureProvider.family<DashboardData, String>((ref, userId) async {
+  final userRatings = await ref.watch(userRatingsProvider(userId).future);
   final musicRepo = ref.read(musicRepositoryProvider);
 
   if (userRatings.isEmpty) {

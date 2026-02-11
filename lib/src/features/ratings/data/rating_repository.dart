@@ -53,8 +53,16 @@ final ratingRepositoryProvider = Provider<RatingRepository>((ref) {
   return FirestoreRatingRepository(FirebaseFirestore.instance);
 });
 
-final userRatingsProvider = StreamProvider<List<Rating>>((ref) {
+final userRatingsProvider =
+    StreamProvider.family<List<Rating>, String>((ref, userId) {
+  return ref.watch(ratingRepositoryProvider).getUserRatings(userId);
+});
+
+// Convenience provider for current user to minimize refactoring elsewhere if possible,
+// but we should probably just use the family.
+// Let's keep a 'currentUserRatingsProvider' for backward compatibility during refactor.
+final currentUserRatingsProvider = StreamProvider<List<Rating>>((ref) {
   final user = ref.watch(authRepositoryProvider).currentUser;
   if (user == null) return Stream.value([]);
-  return ref.watch(ratingRepositoryProvider).getUserRatings(user.uid);
+  return ref.watch(userRatingsProvider(user.uid).future).asStream();
 });

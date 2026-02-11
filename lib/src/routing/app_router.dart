@@ -6,6 +6,7 @@ import 'package:waverate/src/features/authentication/presentation/login_screen.d
 import 'package:waverate/src/features/authentication/presentation/signup_screen.dart';
 import 'package:waverate/src/features/authentication/presentation/profile_screen.dart';
 import 'package:waverate/src/features/authentication/presentation/social_screen.dart';
+import 'package:waverate/src/features/authentication/presentation/user_detail_screen.dart';
 import 'package:waverate/src/features/music/presentation/home_screen.dart';
 import 'package:waverate/src/features/music/presentation/search_screen.dart';
 import 'package:waverate/src/features/music/presentation/catalogs_screen.dart';
@@ -98,6 +99,15 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final id = state.pathParameters['id']!;
           return AlbumDetailScreen(albumId: id);
+        },
+      ),
+      GoRoute(
+        path: '/user/:uid',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) {
+          final uid = state.pathParameters['uid']!;
+          final username = state.uri.queryParameters['username'] ?? 'User';
+          return UserDetailScreen(userId: uid, username: username);
         },
       ),
     ],

@@ -3,36 +3,70 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:waverate/src/features/authentication/data/auth_repository.dart';
+import 'package:waverate/src/features/authentication/data/user_repository.dart';
+import 'package:waverate/src/features/authentication/presentation/social_screen.dart'; // for followingIdsProvider
 import 'package:waverate/src/features/analytics/presentation/dashboard_logic.dart';
 
-class HomeScreen extends ConsumerStatefulWidget {
-  const HomeScreen({super.key});
+class UserDetailScreen extends ConsumerStatefulWidget {
+  final String userId;
+  final String username;
+
+  const UserDetailScreen({
+    super.key,
+    required this.userId,
+    required this.username,
+  });
 
   @override
-  ConsumerState<HomeScreen> createState() => _HomeScreenState();
+  ConsumerState<UserDetailScreen> createState() => _UserDetailScreenState();
 }
 
-class _HomeScreenState extends ConsumerState<HomeScreen> {
+class _UserDetailScreenState extends ConsumerState<UserDetailScreen> {
   @override
   Widget build(BuildContext context) {
-    // We don't need musicRepo here directly anymore for the body,
-    // but might want it for other things. dashboardProvider handles logic.
+    final currentUser = ref.watch(authRepositoryProvider).currentUser;
+    final isMe = currentUser?.uid == widget.userId;
+
+    // Listen to following list to determine if we follow this user
+    final followingIdsAsync = ref.watch(followingIdsProvider);
+    final isFollowing =
+        followingIdsAsync.value?.contains(widget.userId) ?? false;
 
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Waverate Analytics', // Updated title
+          widget.username,
           style: GoogleFonts.outfit(fontWeight: FontWeight.bold),
         ),
+        actions: [
+          if (!isMe && currentUser != null)
+            Padding(
+              padding: const EdgeInsets.only(right: 16),
+              child: isFollowing
+                  ? OutlinedButton(
+                      onPressed: () {
+                        ref.read(userRepositoryProvider).unfollowUser(
+                              currentUser.uid,
+                              widget.userId,
+                            );
+                      },
+                      child: const Text('Unfollow'),
+                    )
+                  : FilledButton(
+                      onPressed: () {
+                        ref.read(userRepositoryProvider).followUser(
+                              currentUser.uid,
+                              widget.userId,
+                            );
+                      },
+                      child: const Text('Follow'),
+                    ),
+            ),
+        ],
       ),
       body: Consumer(
         builder: (context, ref, child) {
-          final user = ref.watch(authRepositoryProvider).currentUser;
-          if (user == null) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          final dashboardAsync = ref.watch(dashboardProvider(user.uid));
+          final dashboardAsync = ref.watch(dashboardProvider(widget.userId));
 
           return dashboardAsync.when(
             data: (data) {
@@ -46,7 +80,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           color: Theme.of(context).colorScheme.outline),
                       const SizedBox(height: 16),
                       Text(
-                        'No ratings yet.\nRate some music to see your analytics!',
+                        '${widget.username} hasn\'t rated much yet.',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             color:

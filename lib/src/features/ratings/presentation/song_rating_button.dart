@@ -23,7 +23,7 @@ class SongRatingButton extends ConsumerWidget {
     // The repository method getSongRating is a Future, so we can't 'watch' it easily without a FutureProvider family.
     // However, we have userRatingsProvider which streams ALL ratings.
     // Let's filter that list.
-    final userRatingsProb = ref.watch(userRatingsProvider);
+    final userRatingsProb = ref.watch(currentUserRatingsProvider);
 
     return userRatingsProb.when(
       data: (ratings) {
@@ -92,7 +92,7 @@ class SongRatingButton extends ConsumerWidget {
         // Log error if possible, but don't show ugly icon directly
         debugPrint('Rating Error: $e');
         return Icon(Icons.star_border,
-            color: Theme.of(context).disabledColor.withOpacity(0.3),
+            color: Theme.of(context).disabledColor.withValues(alpha: 0.3),
             size: iconSize);
       },
     );
